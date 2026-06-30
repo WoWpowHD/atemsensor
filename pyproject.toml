@@ -1,0 +1,17 @@
+[project]
+name = "atemsensor"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "matplotlib>=3.11.0",
+    "scipy>=1.18.0",
+    "typer>=0.26.7",
+]
+
+[tool.uv]
+package = true
+
+[project.scripts]
+atmung = "cli:app"
