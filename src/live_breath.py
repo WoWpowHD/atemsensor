@@ -1,4 +1,5 @@
 import socket
+import errno
 from collections import deque
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,9 +21,18 @@ def start_live_graph(ip: str, port: int):
     # UDP-Socket erstellen statt seriellem Port
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Erlaubt sofortiges erneutes Binden nach dem Beenden (verhindert "Address already in use" bei schnellem Neustart)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind((ip, port))
         sock.setblocking(False) # Verhindert, dass das Skript beim Warten auf Daten einfriert
         print(f"Grafik-Server läuft auf UDP {ip}:{port}...")
+    except OSError as e:
+        if e.errno == errno.EADDRINUSE:
+            print(f"Port {port} ist bereits belegt (Address already in use).")
+            print("Schließe das andere Programm/Fenster oder nutze einen anderen Port (--port <nummer>).")
+        else:
+            print(f"Netzwerk-Fehler: {e}")
+        return
     except Exception as e:
         print(f"Netzwerk-Fehler: {e}")
         return
